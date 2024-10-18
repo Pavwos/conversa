@@ -5,6 +5,10 @@ const socketIo = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+const PORT = process.env.PORT || 3000; // Usar a porta do ambiente ou 3000
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
 
 // Define a rota principal
 app.get('/', (req, res) => {
