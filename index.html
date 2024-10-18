@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <style>
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      padding: 8px;
+      margin-bottom: 5px;
+      background: #f3f3f3;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Chat</h1>
+  <div id="user-container">
+    <input id="username" placeholder="Digite seu nome" />
+    <button id="join-button">Entrar</button>
+  </div>
+  <ul id="messages"></ul>
+  <form id="form" action="" style="display: none;">
+    <input id="input" autocomplete="off" placeholder="Digite sua mensagem" />
+    <button>Enviar</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let username;
+
+    const joinButton = document.getElementById('join-button');
+    const userContainer = document.getElementById('user-container');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    // Evento para o botão de entrar
+    joinButton.addEventListener('click', function () {
+      username = document.getElementById('username').value;
+      if (username) {
+        userContainer.style.display = 'none'; // Esconde o campo de nome
+        form.style.display = 'block'; // Mostra o formulário de mensagens
+      }
+    });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+      if (input.value) {
+        socket.emit('chat message', { user: username, message: input.value }); // Envia a mensagem
+        input.value = ''; // Limpa o campo de entrada
+      }
+    });
+
+    socket.on('chat message', function (data) {
+      const item = document.createElement('li');
+      item.textContent = `${data.user}: ${data.message}`; // Mostra o nome junto com a mensagem
+      messages.appendChild(item); // Exibe a mensagem
+      window.scrollTo(0, document.body.scrollHeight); // Rola para a parte inferior
+    });
+  </script>
+</body>
+
+</html>
